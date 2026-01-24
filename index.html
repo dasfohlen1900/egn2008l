@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>URL-Datei Generator</title>
+
+<!-- Aeropus UI II Font -->
+<style>
+@font-face {
+    font-family: 'Aeropus UI II';
+    src: url('assets/fonts/AeropusUIII-Regular.otf') format('opentype');
+    font-weight: 400;
+}
+body {
+    margin: 0;
+    font-family: 'Aeropus UI II', sans-serif;
+    background-color: #121212;
+    color: #fff;
+}
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px;
+    background-color: #1E1E1E;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+}
+header h1 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+.burger {
+    width: 28px;
+    height: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    cursor: pointer;
+}
+.burger div {
+    height: 4px;
+    background-color: #fff;
+    border-radius: 2px;
+    transition: 0.3s;
+}
+nav {
+    position: fixed;
+    top: 0;
+    right: -250px;
+    width: 250px;
+    height: 100%;
+    background-color: #1E1E1E;
+    padding: 60px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    transition: right 0.3s ease;
+}
+nav a {
+    text-decoration: none;
+    color: #fff;
+    font-size: 1.1rem;
+}
+nav.show {
+    right: 0;
+}
+</style>
+</head>
+<body>
+
+<header>
+    <h1>URL-Datei Generator</h1>
+    <div class="burger" id="burger">
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+</header>
+
+<nav id="menu">
+    <a href="auth.html">Anmelden</a>
+    <a href="create.html">Neue URL erstellen</a>
+    <a href="edit.html">URL bearbeiten</a>
+    <a href="open.html">URL öffnen</a>
+</nav>
+
+<main style="padding: 20px;">
+    <h2>Willkommen!</h2>
+    <p>Erstelle, bearbeite und öffne URL-Dateien im .url08 Format.</p>
+</main>
+
+<script>
+const burger = document.getElementById('burger');
+const menu = document.getElementById('menu');
+
+burger.addEventListener('click', () => {
+    menu.classList.toggle('show');
+    // Burger Animation
+    burger.classList.toggle('open');
+});
+</script>
+
+</body>
+</html>
