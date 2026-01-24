@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>URL öffnen</title>
+
+<style>
+@font-face {
+    font-family: 'Aeropus UI II';
+    src: url('assets/fonts/AeropusUIII-Regular.otf') format('opentype');
+}
+
+:root {
+    --bg: #f7f8fa;
+    --panel: #ffffff;
+    --border: #e5e5e5;
+    --accent: #4c7cff;
+}
+
+body {
+    margin: 0;
+    font-family: 'Aeropus UI II', sans-serif;
+    background: var(--bg);
+    display: grid;
+    grid-template-columns: 1fr 260px;
+    min-height: 100vh;
+}
+
+header {
+    grid-column: 1 / 3;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 22px;
+    background: var(--panel);
+    border-bottom: 1px solid var(--border);
+}
+
+header h1 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+aside {
+    background: var(--panel);
+    border-left: 1px solid var(--border);
+    padding: 26px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+aside h3 {
+    margin: 0 0 10px;
+    font-size: .9rem;
+    opacity: .5;
+    letter-spacing: .06em;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: 14px;
+    text-decoration: none;
+    color: #1e1e1e;
+    transition: .18s;
+}
+
+.nav-link:hover {
+    background: #eef2ff;
+}
+
+.nav-link.active {
+    background: #e7ecff;
+    color: var(--accent);
+}
+
+main {
+    padding: 32px;
+}
+
+.card {
+    background: var(--panel);
+    border-radius: 22px;
+    padding: 26px;
+    border: 1px solid var(--border);
+    max-width: 620px;
+}
+
+.card h2 {
+    margin-top: 0;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 18px;
+}
+
+label {
+    font-size: .9rem;
+    opacity: .6;
+    margin-bottom: 6px;
+}
+
+input {
+    padding: 12px 14px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    font-size: 1rem;
+    outline: none;
+}
+
+#qrCode {
+    margin-top: 20px;
+    text-align: center;
+}
+
+/* Overlay */
+#osWarning {
+    position: fixed;
+    top:0; left:0;
+    width:100%; height:100%;
+    background: rgba(0,0,0,0.75);
+    color: white;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+    z-index: 9999;
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+#osWarning button {
+    margin-top: 20px;
+    padding: 12px 24px;
+    background: var(--accent);
+    border: none;
+    border-radius: 14px;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+#osWarning button:hover {
+    opacity: 0.9;
+}
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+</head>
+
+<body>
+
+<header>
+    <h1>URL öffnen</h1>
+</header>
+
+<main>
+<div class="card">
+
+<h2>📂 Öffne Linkdatei</h2>
+
+<div class="form-group">
+    <label>Datei laden (.url oder .url08)</label>
+    <input type="file" id="fileInput" accept=".url,.url08" onchange="loadFile(event)">
+</div>
+
+<div class="form-group">
+    <label>Name</label>
+    <input id="nameInput" readonly>
+</div>
+
+<div class="form-group">
+    <label>Ziel-URL</label>
+    <input id="urlInput" readonly>
+</div>
+
+<div class="form-group">
+    <label>QR-Code</label>
+    <div id="qrCode"></div>
+</div>
+
+</div>
+</main>
+
+<aside>
+<h3>Navigation</h3>
+<a href="auth.html" class="nav-link">🔐 Anmeldung</a>
+<a href="create.html" class="nav-link">➕ Erstellen</a>
+<a href="edit.html" class="nav-link">✏️ Bearbeiten</a>
+<a href="open.html" class="nav-link active">📂 Öffnen</a>
+</aside>
+
+<!-- OS-Warnung Overlay -->
+<div id="osWarning">
+    <div id="osWarningText"></div>
+    <button id="closeWarningBtn">Schließen</button>
+</div>
+
+<script>
+// QR-Code generieren
+function generateQRCode(url){
+    const qrDiv = document.getElementById("qrCode");
+    qrDiv.innerHTML = "";
+    QRCode.toCanvas(url, { width: 200 }, function(err, canvas){
+        if(err) console.error(err);
+        qrDiv.appendChild(canvas);
+    });
+}
+
+// Datei laden
+function loadFile(event){
+    const file = event.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e){
+        parseFile(e.target.result, file.name);
+    };
+    reader.readAsText(file);
+}
+
+// Datei parsen
+function parseFile(text, filename){
+    if(text.trim().startsWith('[[')){
+        // .url08
+        const regex = /\[\[\s*name:\s*"(.+?)"\s*url:\s*"(.+?)"\s*qr:\s*"(.+?)"\s*password:\s*".*?"\s*pw-grid:\s*".*?"\s*create-time:\s*".*?"\s*\]\]/s;
+        const match = text.match(regex);
+        if(!match){ alert("Ungültige .url08 Datei!"); return; }
+        document.getElementById("nameInput").value = match[1];
+        document.getElementById("urlInput").value = match[2];
+        if(match[3]==="yes") generateQRCode(match[2]);
+    } else {
+        // klassische .url
+        const urlMatch = text.match(/URL=(.+)/);
+        if(!urlMatch){ alert("Ungültige .url Datei!"); return; }
+        document.getElementById("nameInput").value = filename.replace(/\.url$/,"");
+        document.getElementById("urlInput").value = urlMatch[1];
+        generateQRCode(urlMatch[1]);
+        checkOS("url");
+    }
+}
+
+// OS-Erkennung
+function detectOS(){
+    const ua = navigator.userAgent;
+    if(/iPhone|iPad|iPod/i.test(ua)) return "iOS";
+    if(/Macintosh|MacIntel/i.test(ua)){
+        const m = ua.match(/Mac OS X (\d+)_(\d+)_?(\d+)?/);
+        if(m && parseInt(m[1])<11) return "macOS_old";
+        return "macOS";
+    }
+    if(/Windows NT/i.test(ua)){
+        const w = ua.match(/Windows NT (\d+)\.(\d+)/);
+        if(w && parseInt(w[1])<10) return "Windows_old";
+        return "Windows";
+    }
+    if(/Android/i.test(ua)) return "Android";
+    if(/Linux/i.test(ua)) return "Linux";
+    return "Unknown";
+}
+
+// Overlay anzeigen
+function showOSWarning(type){
+    const overlay = document.getElementById("osWarning");
+    const text = document.getElementById("osWarningText");
+
+    if(type==="applemobile"){
+        text.innerHTML = `<b>URL-Internetkürzel</b><br>
+Ein URL-Internetkürzel ist nicht mit iOS oder iPadOS und dieser Seite kompatibel.<br>
+Bitte den Ersteller, eine .url08 zu erstellen oder nimm eine andere Datei.<br>
+Bist du auf URLs angewiesen, öffne den Link mit einem Android-Gerät, einem Windows-PC (Windows 10 oder neuer), über macOS (ab Big Sur) oder Linux.`;
+    } else if(type==="windowsvista78"){
+        text.innerHTML = `<b>URL-Datei erkannt</b><br>
+Es wurde eine URL-Datei mit einem alten Betriebssystem geöffnet.<br>
+Öffne deine URL über deine Dateien oder teste eine .url08.`;
+    }
+    overlay.style.display = "flex";
+}
+
+// forced warning via query
+function checkForcedWarning(){
+    const params = new URLSearchParams(window.location.search);
+    const warning = params.get("warning");
+    if(!warning) return false;
+    if(warning.toLowerCase()==="applemobile"){ showOSWarning("applemobile"); return true; }
+    if(warning.toLowerCase()==="windowsvista78"){ showOSWarning("windowsvista78"); return true; }
+    return false;
+}
+
+// OS Check
+function checkOS(fileType){
+    if(checkForcedWarning()) return;
+    const os = detectOS();
+    if(fileType==="url" && os==="iOS") showOSWarning("applemobile");
+    else if(fileType==="url" && os==="Windows_old") showOSWarning("windowsvista78");
+    else if(fileType==="url" && os==="macOS_old") showOSWarning("windowsvista78");
+}
+
+// Close button
+document.getElementById("closeWarningBtn").addEventListener("click",()=>{
+    document.getElementById("osWarning").style.display = "none";
+});
+</script>
+
+</body>
+</html>
