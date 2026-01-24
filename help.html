@@ -23,7 +23,7 @@ body {
     font-family: 'Aeropus UI II', sans-serif;
     background: var(--bg);
     display: grid;
-    grid-template-columns: 260px 1fr;
+    grid-template-columns: 260px 1fr; /* Sidebar + Main */
     min-height: 100vh;
 }
 
@@ -36,6 +36,7 @@ header {
     border-bottom: 1px solid var(--border);
     font-size: 1.5rem;
     font-weight: 600;
+    z-index: 10;
 }
 
 aside {
@@ -45,6 +46,12 @@ aside {
     display: flex;
     flex-direction: column;
     gap: 12px;
+
+    /* Fixiert Sidebar am Rand */
+    position: sticky;
+    top: 0;
+    height: 100vh;      /* volle Höhe */
+    overflow-y: auto;    /* scrollbar, falls zu viele Links */
 }
 
 aside h3 {
@@ -103,6 +110,10 @@ code {
     padding: 2px 6px;
     border-radius: 6px;
 }
+
+ul, ol {
+    margin-left: 20px;
+}
 </style>
 </head>
 <body>
@@ -111,7 +122,7 @@ code {
 
 <aside id="helpSidebar">
     <h3>Navigation</h3>
-    <a href="/">🏠 Start</a>
+    <a href="/" class"nav-link">🏠 Start</a>
     <a href="#starten" class="nav-link">Starten</a>
 
     <div class="chapter">
@@ -132,124 +143,108 @@ code {
 
 <section id="starten">
     <h2>Starten</h2>
-    <p>Willkommen bei Aeropus! Diese Hilfeseite soll dir alle Funktionen unserer Plattform verständlich erklären. 
-    Egal ob du Links lokal verwaltest oder in der Cloud speicherst – hier findest du Schritt-für-Schritt-Anleitungen, 
-    Tipps zu erweiterten Funktionen und Lösungen für mögliche Probleme.</p>
-    <p>Die Oberfläche ist bewusst klar strukturiert: Header für den globalen Kontext, Sidebar für Navigation, Hauptbereich für Inhalte. 
-    So kannst du schnell zwischen Kapiteln und Funktionen wechseln.</p>
+    <p>Willkommen bei Aeropus! Diese Hilfeseite bietet detaillierte Erklärungen für alle Funktionen unserer Plattform, egal ob du Links lokal oder in der Cloud verwaltest. Schritt-für-Schritt-Anleitungen, Tipps zu erweiterten Funktionen und Lösungen für mögliche Probleme sind enthalten.</p>
+    <p>Die Oberfläche ist klar strukturiert: Header zeigt den Kontext, Sidebar die Navigation, Hauptbereich die Inhalte. So bleibst du jederzeit orientiert.</p>
 </section>
 
 <section id="einführung">
     <h2>Einführung in die Oberfläche</h2>
     <p>Die Aeropus-Oberfläche besteht aus drei Hauptbereichen:</p>
     <ul>
-        <li><b>Header:</b> Zeigt den aktuellen Modus, Titel und ggf. Login-Status.</li>
-        <li><b>Sidebar:</b> Enthält alle Kapitel und Funktionen, inklusive 🔒 geschützter Cloud-Funktionen.</li>
-        <li><b>Hauptbereich:</b> Hier werden Inhalte, Formulare, QR-Codes und Anleitungen angezeigt.</li>
+        <li><b>Header:</b> Zeigt aktuellen Modus, Titel und Login-Status.</li>
+        <li><b>Sidebar:</b> Enthält Kapitel und Funktionen, inklusive 🔒 geschützter Cloud-Funktionen.</li>
+        <li><b>Hauptbereich:</b> Zeigt Inhalte, Formulare, QR-Codes und Anleitungen.</li>
     </ul>
-    <p>Die Sidebar ist in Kapitel und Unterkapitel gegliedert, damit du jederzeit weißt, in welchem Abschnitt du dich befindest. 
-    Scrollst du durch die Seite, wird automatisch der aktuelle Punkt hervorgehoben.</p>
+    <p>Die Sidebar bleibt fixiert am Rand und hebt beim Scrollen automatisch den aktuellen Punkt hervor.</p>
 </section>
 
 <section id="loslegen">
     <h2>Loslegen</h2>
-    <p>Bevor du Cloudfunktionen nutzen kannst, musst du dich anmelden. Das sorgt dafür, dass deine Links sicher gespeichert werden. 
-    Für lokale Links ist keine Anmeldung nötig – du kannst direkt Dateien erstellen, bearbeiten oder öffnen.</p>
-    <p>Empfohlene Vorgehensweise:</p>
+    <p>Bevor du Cloudfunktionen nutzt, melde dich an. So werden Links sicher gespeichert. Lokale Links benötigen keine Anmeldung.</p>
     <ol>
-        <li>Cloudmodus: Anmeldung durchführen → Sidebar zeigt jetzt alle 🔒 Funktionen.</li>
-        <li>Lokaler Modus: Datei auswählen oder neue .url08 erstellen → sofortiger Zugriff.</li>
-        <li>QR-Code Vorschau prüfen → einfacher Zugriff via Smartphone.</li>
+        <li>Melde dich im Cloudmodus an → Sidebar zeigt 🔒 Funktionen.</li>
+        <li>Für lokale Links → Datei auswählen oder neue .url08 erstellen → sofortiger Zugriff.</li>
+        <li>QR-Code Vorschau prüfen → schneller Zugriff via Smartphone.</li>
     </ol>
 </section>
 
 <section id="link-erstellen">
     <h2>Einen Link erstellen</h2>
-    <p>Um einen neuen Link zu erstellen:</p>
+    <p>So erstellst du neue Links:</p>
     <ul>
-        <li>Cloudmodus: <code>Cloudlink erstellen</code> aufrufen → Formular ausfüllen.</li>
-        <li>Lokaler Modus: <code>create.html</code> → Name, URL, QR-Code Option, Passwort eingeben.</li>
+        <li>Cloudmodus: <code>Cloudlink erstellen</code> → Formular ausfüllen → Speichern.</li>
+        <li>Lokaler Modus: <code>create.html</code> → Name, URL, QR-Option, Passwort eingeben → Datei speichern.</li>
     </ul>
     <p>Tipps:</p>
     <ul>
-        <li>Wenn du <b>QR-Code</b> aktivierst, kannst du die URL direkt per Smartphone öffnen.</li>
-        <li>Für sensible Links empfiehlt sich <b>Passwortschutz</b>. Die Datei wird dann nur nach Eingabe eines 6-stelligen PINs geöffnet.</li>
-        <li>Speichere Cloud-Links regelmäßig, um Datenverlust zu vermeiden.</li>
+        <li>QR-Code aktivieren für mobile Nutzung.</li>
+        <li>Passwortschutz schützt sensible Links (6-stelliger PIN).</li>
+        <li>Cloud-Links regelmäßig speichern.</li>
     </ul>
 </section>
 
 <section id="link-bearbeiten">
     <h2>Einen Link bearbeiten</h2>
-    <p>Bestehende Links können jederzeit bearbeitet werden:</p>
     <ul>
-        <li>Cloudmodus: <code>Cloudlink bearbeiten</code> → wähle den Link → bearbeite Name, URL, QR oder Passwort → Speichern.</li>
+        <li>Cloudmodus: <code>Cloudlink bearbeiten</code> → Link auswählen → Änderungen speichern.</li>
         <li>Lokaler Modus: <code>edit.html</code> → Datei auswählen → Änderungen vornehmen.</li>
     </ul>
     <p>Hinweise:</p>
     <ul>
-        <li>Passwortgeschützte Links erfordern die Eingabe der 6-stelligen PIN vor Bearbeitung.</li>
-        <li>Die Historie der Änderungen wird nicht automatisch gespeichert, daher ggf. lokale Sicherung anlegen.</li>
+        <li>Passwortgeschützte Links benötigen PIN.</li>
+        <li>Lokale Historie nicht automatisch gespeichert → ggf. Backup erstellen.</li>
     </ul>
 </section>
 
 <section id="erweiterte-funktionen">
     <h2>Erweiterte Funktionen</h2>
-    <p>Die Aeropus-Plattform bietet einige nützliche Erweiterungen:</p>
     <ul>
-        <li>Automatisches Speichern in der Cloud (Supabase).</li>
-        <li>QR-Code-Vorschau vor dem Öffnen oder Teilen.</li>
-        <li>OS-Warnungen, wenn Links auf iOS, alten Windows- oder macOS-Versionen geöffnet werden.</li>
-        <li>Forced Warnings per URL-Query (z.B. <code>?warning=applemobile</code>).</li>
+        <li>Automatisches Speichern in Cloud (Supabase).</li>
+        <li>QR-Code-Vorschau vor Öffnen oder Teilen.</li>
+        <li>OS-Warnungen bei iOS, alten Windows/Mac-Versionen.</li>
+        <li>Forced Warnings per URL-Query möglich.</li>
     </ul>
 </section>
 
 <section id="link-öffnen">
     <h2>Einen Link öffnen</h2>
-    <p>Links können aus der Cloud oder lokal geöffnet werden:</p>
     <ul>
-        <li>Cloud: <code>open-cloud.html</code> → wähle gespeicherten Link → Passwort prüfen → QR-Code anzeigen.</li>
-        <li>Lokale Datei: <code>open.html</code> → .url oder .url08 auswählen → Passwort prüfen → QR-Code anzeigen.</li>
+        <li>Cloud: <code>open-cloud.html</code> → Link auswählen → Passwort prüfen → QR-Code anzeigen.</li>
+        <li>Lokal: <code>open.html</code> → Datei auswählen → Passwort prüfen → QR-Code anzeigen.</li>
     </ul>
     <p>Tipps:</p>
     <ul>
-        <li>Passwortgeschützte .url08 Dateien müssen die 6-stellige PIN eingeben, sonst kann der Inhalt nicht geöffnet werden.</li>
-        <li>Abbrechen ist möglich → Overlay schließt sich → Datei kann später erneut geöffnet werden.</li>
-        <li>„Zur Website navigieren“-Button öffnet die URL im neuen Tab.</li>
+        <li>Abbrechen schließt Overlay → Datei später erneut öffnen.</li>
+        <li>„Zur Website navigieren“-Button öffnet URL im neuen Tab.</li>
     </ul>
 </section>
 
 <section id="urls-öffnen">
     <h2>URLs öffnen</h2>
-    <p>Unterstützte Dateiformate:</p>
+    <p>Unterstützte Formate:</p>
     <ul>
         <li><code>.url</code>: klassische Windows/Internet Shortcut Datei.</li>
-        <li><code>.url08</code>: moderne Aeropus-Datei mit QR-Code und optionalem Passwort.</li>
+        <li><code>.url08</code>: moderne Aeropus-Datei mit QR-Code & Passwort.</li>
     </ul>
-    <p>Empfehlungen:</p>
     <ul>
-        <li>Bei iOS/iPadOS immer .url08 verwenden → keine Kompatibilitätsprobleme.</li>
-        <li>Auf Windows 10+, macOS Big Sur+ oder Linux → sowohl .url als auch .url08 möglich.</li>
-        <li>QR-Codes erleichtern das schnelle Öffnen auf Mobilgeräten.</li>
+        <li>iOS/iPadOS → nur .url08 verwenden.</li>
+        <li>Windows 10+, macOS Big Sur+ → beide Formate möglich.</li>
+        <li>QR-Codes für schnelle Mobilnutzung.</li>
     </ul>
 </section>
 
 <section id="sonderfall-ios">
     <h2>Sonderfall iOS</h2>
-    <p>iOS und iPadOS erkennen klassische .url-Dateien nicht korrekt. Daher:</p>
     <ul>
-        <li>Beim Öffnen von .url erscheint ein Overlay mit Hinweis.</li>
-        <li>Empfohlene Lösung: erstelle .url08 Dateien mit Passwortschutz oder QR-Code.</li>
-        <li>Forced Warnings per URL-Query ermöglichen Entwicklern, Nutzer gezielt zu warnen.</li>
-        <li>So stellst du sicher, dass Links auf allen Plattformen korrekt geöffnet werden.</li>
+        <li>iOS/iPadOS erkennen klassische .url-Dateien nicht korrekt → Overlay erscheint.</li>
+        <li>Lösung: .url08 verwenden → Passwort oder QR-Code aktiviert.</li>
+        <li>Forced Warnings per URL-Query: <code>?warning=applemobile</code>.</li>
     </ul>
 </section>
 
 <section id="einzelnachweise">
     <h2>Einzelnachweise</h2>
-    <p>Die Funktionen basieren auf Aeropus UI II, Supabase-Cloudintegration und moderner Browsertechnologie. 
-    QR-Codes werden via <code>qrcode.js</code> erzeugt. Die Passwortlogik für .url08 Dateien schützt Inhalte vor unbefugtem Zugriff. 
-    OS-Erkennung erfolgt über <code>navigator.userAgent</code>.</p>
-    <p>Weitere Informationen und Updates findest du in den Aeropus Release Notes und der offiziellen Dokumentation.</p>
+    <p>Basis: Aeropus UI II, Supabase-Cloudintegration, moderne Browsertechnologien. QR-Codes via <code>qrcode.js</code>, Passwortlogik schützt .url08 Inhalte, OS-Erkennung über <code>navigator.userAgent</code>.</p>
 </section>
 
 </main>
