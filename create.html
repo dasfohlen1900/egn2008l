@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neue URL erstellen</title>
+
+<style>
+@font-face {
+    font-family: 'Aeropus UI II';
+    src: url('assets/fonts/AeropusUIII-Regular.otf') format('opentype');
+}
+
+:root {
+    --bg: #f7f8fa;
+    --panel: #ffffff;
+    --border: #e5e5e5;
+    --accent: #4c7cff;
+}
+
+body {
+    margin: 0;
+    font-family: 'Aeropus UI II', sans-serif;
+    background: var(--bg);
+    display: grid;
+    grid-template-columns: 1fr 260px;
+    height: 100vh;
+}
+
+header {
+    grid-column: 1 / 3;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 22px;
+    background: var(--panel);
+    border-bottom: 1px solid var(--border);
+}
+
+header h1 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+aside {
+    background: var(--panel);
+    border-left: 1px solid var(--border);
+    padding: 26px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+aside h3 {
+    margin: 0 0 10px;
+    font-size: .9rem;
+    opacity: .5;
+    letter-spacing: .06em;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: 14px;
+    text-decoration: none;
+    color: #1e1e1e;
+    transition: .18s;
+}
+
+.nav-link:hover {
+    background: #eef2ff;
+}
+
+.nav-link.active {
+    background: #e7ecff;
+    color: var(--accent);
+}
+
+main {
+    padding: 32px;
+}
+
+.card {
+    background: var(--panel);
+    border-radius: 22px;
+    padding: 26px;
+    border: 1px solid var(--border);
+    max-width: 620px;
+}
+
+.card h2 {
+    margin-top: 0;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 18px;
+}
+
+label {
+    font-size: .9rem;
+    opacity: .6;
+    margin-bottom: 6px;
+}
+
+input, select {
+    padding: 12px 14px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    font-size: 1rem;
+    outline: none;
+}
+
+input:focus, select:focus {
+    border-color: var(--accent);
+}
+
+.buttons {
+    display: flex;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+button {
+    padding: 12px 18px;
+    border-radius: 16px;
+    border: none;
+    background: var(--accent);
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.secondary {
+    background: #eceff3;
+    color: #111;
+}
+
+button:hover {
+    opacity: .9;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>URL-Datei Generator</h1>
+</header>
+
+<main>
+
+<div class="card">
+
+<h2>➕ Neue .url08 erstellen</h2>
+
+<div class="form-group">
+    <label>Name</label>
+    <input id="nameInput" placeholder="Meine Seite">
+</div>
+
+<div class="form-group">
+    <label>Ziel-URL</label>
+    <input id="urlInput" placeholder="https://example.com">
+</div>
+
+<div class="form-group">
+    <label>QR-Code generieren</label>
+    <select id="qrSelect">
+        <option value="yes">Ja</option>
+        <option value="no">Nein</option>
+    </select>
+</div>
+
+<div class="form-group">
+    <label>Passwort aktivieren</label>
+    <select id="pwSelect" onchange="togglePWGrid()">
+        <option value="no">Nein</option>
+        <option value="yes">Ja</option>
+    </select>
+</div>
+
+<div class="form-group" id="pwGridGroup" style="display:none;">
+    <label>6-stelliger PIN</label>
+    <input id="pwGridInput" placeholder="123456" maxlength="6">
+</div>
+
+<div class="buttons">
+    <button onclick="createURL08()">Datei erstellen</button>
+    <button class="secondary" onclick="clearForm()">Zurücksetzen</button>
+</div>
+
+</div>
+
+</main>
+
+<aside>
+<h3>Navigation</h3>
+<a href="auth.html" class="nav-link">🔐 Anmeldung</a>
+<a href="create.html" class="nav-link active">➕ Erstellen</a>
+<a href="edit.html" class="nav-link">✏️ Bearbeiten</a>
+<a href="open.html" class="nav-link">📂 Öffnen</a>
+</aside>
+
+<script>
+/* ==== Query-Parameter auslesen und Formular ausfüllen ==== */
+function fillFromQuery() {
+    const params = new URLSearchParams(window.location.search);
+    const name = params.get("name") || "";
+    const link = params.get("link") || "";
+    const qr = params.get("qr") || "yes";
+    const pw = params.get("password") || "no";
+    const pwGrid = params.get("pwgrid") || "";
+
+    document.getElementById("nameInput").value = name;
+    document.getElementById("urlInput").value = link;
+    document.getElementById("qrSelect").value = qr;
+    document.getElementById("pwSelect").value = pw;
+    togglePWGrid();
+    if (pw === "yes" && pwGrid.length === 6) {
+        document.getElementById("pwGridInput").value = pwGrid;
+    }
+}
+
+/* ==== Passwort-Grid anzeigen/ausblenden ==== */
+function togglePWGrid() {
+    const pwSelect = document.getElementById("pwSelect").value;
+    document.getElementById("pwGridGroup").style.display = pwSelect === "yes" ? "block" : "none";
+}
+
+/* ==== URL08 Datei erzeugen ==== */
+function createURL08() {
+    const name = document.getElementById("nameInput").value.trim();
+    const url = document.getElementById("urlInput").value.trim();
+    const qr = document.getElementById("qrSelect").value;
+    const password = document.getElementById("pwSelect").value;
+    let pwGrid = "0 0 0 0 0 0";
+
+    if (!name || !url) {
+        alert("Bitte Name und URL eingeben.");
+        return;
+    }
+
+    if (password === "yes") {
+        const pin = document.getElementById("pwGridInput").value.trim();
+        if (!/^\d{6}$/.test(pin)) {
+            alert("Bitte eine 6-stellige Zahl für das Passwort eingeben.");
+            return;
+        }
+        pwGrid = pin.split("").join(" ");
+    }
+
+    const timestamp = new Date();
+    const createTime = timestamp.getFullYear() + "-" +
+                       String(timestamp.getMonth()+1).padStart(2,'0') + "-" +
+                       String(timestamp.getDate()).padStart(2,'0') + ", " +
+                       String(timestamp.getHours()).padStart(2,'0') + ":" +
+                       String(timestamp.getMinutes()).padStart(2,'0') + ":" +
+                       String(timestamp.getSeconds()).padStart(2,'0');
+
+    const content =
+`[[
+name: "${name}"
+url: "${url}"
+qr: "${qr}"
+password: "${password}"
+pw-grid: "${pwGrid}"
+create-time: "${createTime}"
+]]`;
+
+    const blob = new Blob([content], { type: "text/plain" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = name + ".url08";
+    link.click();
+}
+
+/* ==== Formular zurücksetzen ==== */
+function clearForm() {
+    document.getElementById("nameInput").value = "";
+    document.getElementById("urlInput").value = "";
+    document.getElementById("qrSelect").value = "yes";
+    document.getElementById("pwSelect").value = "no";
+    document.getElementById("pwGridInput").value = "";
+    togglePWGrid();
+}
+
+/* ==== Seite initialisieren ==== */
+window.onload = fillFromQuery;
+</script>
+
+</body>
+</html>
