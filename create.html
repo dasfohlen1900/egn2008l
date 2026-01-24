@@ -286,7 +286,39 @@ function clearForm() {
     document.getElementById("pwSelect").value = "no";
     document.getElementById("pwGridInput").value = "";
     togglePWGrid();
+};
+
+/* ==== Auto-Update der URL bei Änderungen ==== */
+function updateQueryURL() {
+    const name = encodeURIComponent(document.getElementById("nameInput").value.trim());
+    const link = encodeURIComponent(document.getElementById("urlInput").value.trim());
+    const qr = document.getElementById("qrSelect").value;
+    const password = document.getElementById("pwSelect").value;
+    let pwGrid = "0";
+    if (password === "yes") {
+        const pin = document.getElementById("pwGridInput").value.trim();
+        pwGrid = /^\d{6}$/.test(pin) ? pin : "";
+    }
+
+    const params = new URLSearchParams();
+    if (name) params.set("name", name);
+    if (link) params.set("link", link);
+    params.set("qr", qr);
+    params.set("password", password);
+    if (pwGrid) params.set("pwgrid", pwGrid);
+
+    const newURL = window.location.pathname + "?" + params.toString();
+    history.replaceState(null, "", newURL);
 }
+
+/* Event-Listener auf Inputs setzen */
+["nameInput", "urlInput", "qrSelect", "pwSelect", "pwGridInput"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+        el.addEventListener("input", updateQueryURL);
+        el.addEventListener("change", updateQueryURL);
+    }
+});
 
 /* ==== Seite initialisieren ==== */
 window.onload = fillFromQuery;
