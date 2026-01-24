@@ -114,13 +114,17 @@ input {
     outline: none;
 }
 
+button {
+    cursor: pointer;
+}
+
 #qrCode {
     margin-top: 20px;
     text-align: center;
 }
 
 /* Overlay */
-#osWarning {
+#osWarning, #pwOverlay {
     position: fixed;
     top:0; left:0;
     width:100%; height:100%;
@@ -134,9 +138,10 @@ input {
     z-index: 9999;
     font-size: 1rem;
     line-height: 1.6;
+    flex-direction: column;
 }
 
-#osWarning button {
+#osWarning button, #pwOverlay button {
     margin-top: 20px;
     padding: 12px 24px;
     background: var(--accent);
@@ -144,10 +149,9 @@ input {
     border-radius: 14px;
     color: white;
     font-size: 1rem;
-    cursor: pointer;
 }
 
-#osWarning button:hover {
+#osWarning button:hover, #pwOverlay button:hover {
     opacity: 0.9;
 }
 </style>
@@ -184,6 +188,7 @@ input {
 <div class="form-group">
     <label>QR-Code</label>
     <div id="qrCode"></div>
+    <button id="goWebsiteBtn" style="display:none;">Zur Website navigieren</button>
 </div>
 
 </div>
@@ -203,8 +208,20 @@ input {
     <button id="closeWarningBtn">Schließen</button>
 </div>
 
+<!-- Passwort Overlay -->
+<div id="pwOverlay">
+    <div style="max-width:360px;">
+        <h2>🔒 Passwort erforderlich</h2>
+        <p>Gib den 6-stelligen PIN ein, um diese Datei zu öffnen</p>
+        <input id="pwInput" type="text" maxlength="6" pattern="\d{6}" placeholder="123456" style="padding:12px 14px;border-radius:14px;border:none;font-size:1rem;width:100%;text-align:center;margin-top:12px;">
+        <button id="pwSubmit">Öffnen</button>
+        <p id="pwError" style="color:#ff7f7f;opacity:0.9;margin-top:12px;display:none;">Falsches Passwort!</p>
+        <button id="pwClose" style="margin-top:12px;padding:10px 20px;border-radius:12px;background:#888;border:none;color:white;cursor:pointer;">Abbrechen</button>
+    </div>
+</div>
+
 <script>
-// QR-Code generieren
+// QR-Code
 function generateQRCode(url){
     const qrDiv = document.getElementById("qrCode");
     qrDiv.innerHTML = "";
@@ -226,27 +243,73 @@ function loadFile(event){
 }
 
 // Datei parsen
+let pwCorrect = "";
+let pendingContent = null;
+
 function parseFile(text, filename){
     if(text.trim().startsWith('[[')){
-        // .url08
-        const regex = /\[\[\s*name:\s*"(.+?)"\s*url:\s*"(.+?)"\s*qr:\s*"(.+?)"\s*password:\s*".*?"\s*pw-grid:\s*".*?"\s*create-time:\s*".*?"\s*\]\]/s;
+        const regex = /\[\[\s*name:\s*"(.+?)"\s*url:\s*"(.+?)"\s*qr:\s*"(.+?)"\s*password:\s*"(yes|no)"\s*pw-grid:\s*"(.*?)"\s*create-time:\s*".*?"\s*\]\]/s;
         const match = text.match(regex);
         if(!match){ alert("Ungültige .url08 Datei!"); return; }
-        document.getElementById("nameInput").value = match[1];
-        document.getElementById("urlInput").value = match[2];
-        if(match[3]==="yes") generateQRCode(match[2]);
+        
+        const name = match[1], url = match[2], qr = match[3], password = match[4], pwGrid = match[5];
+
+        if(password === "yes"){
+            promptPassword(pwGrid, {name,url,qr});
+        } else {
+            openURL08({name,url,qr});
+        }
     } else {
-        // klassische .url
         const urlMatch = text.match(/URL=(.+)/);
         if(!urlMatch){ alert("Ungültige .url Datei!"); return; }
         document.getElementById("nameInput").value = filename.replace(/\.url$/,"");
         document.getElementById("urlInput").value = urlMatch[1];
         generateQRCode(urlMatch[1]);
         checkOS("url");
+        showGoBtn(urlMatch[1]);
     }
 }
 
-// OS-Erkennung
+// open URL08
+function openURL08(data){
+    document.getElementById("nameInput").value = data.name;
+    document.getElementById("urlInput").value = data.url;
+    if(data.qr==="yes") generateQRCode(data.url);
+    showGoBtn(data.url);
+}
+
+// Button „Zur Website navigieren“
+function showGoBtn(url){
+    const goBtn = document.getElementById("goWebsiteBtn");
+    goBtn.style.display = "inline-block";
+    goBtn.onclick = ()=> window.open(url,"_blank");
+}
+
+// Passwort Overlay
+function promptPassword(pwGrid, content){
+    pwCorrect = pwGrid.replace(/[^0-9]/g,'');
+    pendingContent = content;
+    const overlay = document.getElementById("pwOverlay");
+    overlay.style.display = "flex";
+    document.getElementById("pwInput").value = "";
+    document.getElementById("pwError").style.display = "none";
+}
+
+document.getElementById("pwSubmit").addEventListener("click", ()=>{
+    const val = document.getElementById("pwInput").value;
+    if(val === pwCorrect){
+        openURL08(pendingContent);
+        document.getElementById("pwOverlay").style.display = "none";
+    } else {
+        document.getElementById("pwError").style.display = "block";
+    }
+});
+
+document.getElementById("pwClose").addEventListener("click", ()=>{
+    document.getElementById("pwOverlay").style.display = "none";
+});
+
+// OS Detection
 function detectOS(){
     const ua = navigator.userAgent;
     if(/iPhone|iPad|iPod/i.test(ua)) return "iOS";
@@ -265,11 +328,9 @@ function detectOS(){
     return "Unknown";
 }
 
-// Overlay anzeigen
 function showOSWarning(type){
     const overlay = document.getElementById("osWarning");
     const text = document.getElementById("osWarningText");
-
     if(type==="applemobile"){
         text.innerHTML = `<b>URL-Internetkürzel</b><br>
 Ein URL-Internetkürzel ist nicht mit iOS oder iPadOS und dieser Seite kompatibel.<br>
@@ -283,7 +344,6 @@ Es wurde eine URL-Datei mit einem alten Betriebssystem geöffnet.<br>
     overlay.style.display = "flex";
 }
 
-// forced warning via query
 function checkForcedWarning(){
     const params = new URLSearchParams(window.location.search);
     const warning = params.get("warning");
@@ -293,7 +353,6 @@ function checkForcedWarning(){
     return false;
 }
 
-// OS Check
 function checkOS(fileType){
     if(checkForcedWarning()) return;
     const os = detectOS();
@@ -302,9 +361,9 @@ function checkOS(fileType){
     else if(fileType==="url" && os==="macOS_old") showOSWarning("windowsvista78");
 }
 
-// Close button
+// Schließen Overlay OS
 document.getElementById("closeWarningBtn").addEventListener("click",()=>{
-    document.getElementById("osWarning").style.display = "none";
+    document.getElementById("osWarning").style.display="none";
 });
 </script>
 
