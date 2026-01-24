@@ -5,101 +5,126 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>URL-Datei Generator</title>
 
-<!-- Aeropus UI II Font -->
 <style>
 @font-face {
     font-family: 'Aeropus UI II';
     src: url('assets/fonts/AeropusUIII-Regular.otf') format('opentype');
     font-weight: 400;
 }
+
+/* ===== Base ===== */
+
 body {
     margin: 0;
     font-family: 'Aeropus UI II', sans-serif;
-    background-color: #121212;
-    color: #fff;
+    background-color: #f7f8fa;
+    color: #1e1e1e;
+    display: grid;
+    grid-template-columns: 1fr 260px;
+    height: 100vh;
 }
+
+/* ===== Header ===== */
+
 header {
+    grid-column: 1 / 3;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 12px 20px;
-    background-color: #1E1E1E;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    padding: 14px 22px;
+    background: #ffffff;
+    border-bottom: 1px solid #e5e5e5;
 }
+
 header h1 {
     margin: 0;
     font-size: 1.5rem;
 }
+
+/* ===== Burger Icon ===== */
+
 .burger {
-    width: 28px;
+    width: 26px;
     height: 20px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    cursor: pointer;
 }
-.burger div {
-    height: 4px;
-    background-color: #fff;
+
+.burger span {
+    height: 3px;
+    background: #1e1e1e;
     border-radius: 2px;
-    transition: 0.3s;
 }
-nav {
-    position: fixed;
-    top: 0;
-    right: -250px;
-    width: 250px;
-    height: 100%;
-    background-color: #1E1E1E;
-    padding: 60px 20px;
+
+/* ===== Sidebar ===== */
+
+aside {
+    background: #ffffff;
+    border-left: 1px solid #e5e5e5;
+    padding: 26px 22px;
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    transition: right 0.3s ease;
+    gap: 18px;
 }
-nav a {
+
+aside h3 {
+    margin-top: 0;
+    font-size: 1rem;
+    opacity: .6;
+    letter-spacing: .05em;
+}
+
+aside a {
     text-decoration: none;
-    color: #fff;
-    font-size: 1.1rem;
+    color: #1e1e1e;
+    font-size: 1.05rem;
+    padding: 8px 12px;
+    border-radius: 10px;
+    transition: .2s;
 }
-nav.show {
-    right: 0;
+
+aside a:hover {
+    background: #eceff3;
+}
+
+/* ===== Main ===== */
+
+main {
+    padding: 28px;
+}
+
+main h2 {
+    font-size: 2rem;
+    margin-top: 0;
 }
 </style>
 </head>
+
 <body>
 
 <header>
     <h1>URL-Datei Generator</h1>
-    <div class="burger" id="burger">
-        <div></div>
-        <div></div>
-        <div></div>
+
+    <div class="burger">
+        <span></span>
+        <span></span>
+        <span></span>
     </div>
 </header>
 
-<nav id="menu">
-    <a href="auth.html">Anmelden</a>
-    <a href="create.html">Neue URL erstellen</a>
-    <a href="edit.html">URL bearbeiten</a>
-    <a href="open.html">URL öffnen</a>
-</nav>
-
-<main style="padding: 20px;">
-    <h2>Willkommen!</h2>
-    <p>Erstelle, bearbeite und öffne URL-Dateien im .url08 Format.</p>
+<main>
+    <h2>Willkommen 👋</h2>
+    <p>Erstelle, bearbeite und öffne URL-Dateien im .url08-Format.</p>
 </main>
 
-<script>
-const burger = document.getElementById('burger');
-const menu = document.getElementById('menu');
-
-burger.addEventListener('click', () => {
-    menu.classList.toggle('show');
-    // Burger Animation
-    burger.classList.toggle('open');
-});
-</script>
+<aside>
+    <h3>Navigation</h3>
+    <a href="auth.html">Anmelden</a>
+    <a href="create.html">Neue URL</a>
+    <a href="edit.html">Bearbeiten</a>
+    <a href="open.html">Öffnen</a>
+</aside>
 
 </body>
 </html>
