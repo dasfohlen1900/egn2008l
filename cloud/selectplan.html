@@ -5,8 +5,6 @@
 <title>Bitte Plan wählen</title>
 
 <style>
-
-body {
     @font-face {
     font-family: "Aeropus UI II";
     src: url("/assets/fonts/AeropusUIII-Regular.otf") format("opentype");
@@ -14,6 +12,8 @@ body {
     font-style: normal;
     font-display: swap;
 }
+body {
+
     font-family: 'Aeropus UI II', system-ui, sans-serif;
     background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
     min-height:100vh;
@@ -180,7 +180,7 @@ h1 {
 <div><b>Educational:</b> kostenlos</div>
 </div>
 
-<button class="start">Anfrage senden</button>
+<a class="start" href="auth.html?plan=edu">Anfrage senden</a>
 </div>
 
 </div>
