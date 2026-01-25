@@ -2,11 +2,19 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>Plan wählen – Villo</title>
+<title>Bitte Plan wählen</title>
 
 <style>
+
 body {
-    font-family: system-ui, sans-serif;
+    @font-face {
+    font-family: "Aeropus UI II";
+    src: url("/assets/fonts/AeropusUIII-Regular.otf") format("opentype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+    font-family: 'Aeropus UI II', system-ui, sans-serif;
     background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
     min-height:100vh;
     margin:0;
@@ -42,7 +50,6 @@ h1 {
     color:white;
     font-weight:600;
 }
-
 .toggle button.active {
     background:linear-gradient(135deg,#00ffb3,#00c4ff);
     color:black;
@@ -139,7 +146,7 @@ h1 {
 </div>
 </div>
 
-<button class="start">Starten</button>
+<a class="start" href="auth.html?plan=free">Starten</a>
 </div>
 
 <!-- PRO -->
@@ -154,7 +161,7 @@ h1 {
 <div>❌ Personalisierte Links</div>
 </div>
 
-<button class="start" href="auth.html?plan=pro">Mitglied werden</button>
+<a class="start" href="auth.html?plan=pro">Mitglied werden</a>
 </div>
 
 <!-- TEAM -->
