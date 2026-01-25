@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Plan wählen – Villo</title>
+
+<style>
+body {
+    font-family: system-ui, sans-serif;
+    background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+    min-height:100vh;
+    margin:0;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    color:white;
+}
+
+.container {
+    width:1100px;
+    max-width:95%;
+}
+
+h1 {
+    text-align:center;
+    margin-bottom:20px;
+}
+
+.toggle {
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    margin-bottom:30px;
+}
+
+.toggle button {
+    padding:10px 18px;
+    border-radius:12px;
+    border:none;
+    cursor:pointer;
+    background:rgba(255,255,255,.15);
+    color:white;
+    font-weight:600;
+}
+
+.toggle button.active {
+    background:linear-gradient(135deg,#00ffb3,#00c4ff);
+    color:black;
+}
+
+.cards {
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    gap:20px;
+}
+
+.card {
+    background:rgba(0,0,0,.45);
+    border-radius:20px;
+    padding:28px;
+    box-shadow:0 15px 35px rgba(0,0,0,.5);
+    display:flex;
+    flex-direction:column;
+}
+
+.card h2 {
+    font-size:1.6rem;
+    margin-bottom:10px;
+}
+
+.price {
+    font-size:1.4rem;
+    margin-bottom:12px;
+    color:#00ffb3;
+}
+
+.features {
+    flex:1;
+    font-size:.95rem;
+}
+
+.features div {
+    margin:6px 0;
+}
+
+.warn {
+    margin-top:10px;
+    font-size:.85rem;
+    color:#ffc96b;
+}
+
+.start {
+    margin-top:18px;
+    padding:14px;
+    border-radius:14px;
+    border:none;
+    font-weight:700;
+    cursor:pointer;
+    background:linear-gradient(135deg,#00ffb3,#00c4ff);
+}
+
+.small {
+    opacity:.85;
+    font-size:.85rem;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<h1>Plan wählen:</h1>
+
+<div class="toggle">
+    <button class="active" data-mode="monthly">Monatlich</button>
+    <button data-mode="yearly">Jährlich</button>
+    <button data-mode="once">Einmalig</button>
+</div>
+
+<div class="cards">
+
+<!-- FREE -->
+<div class="card">
+<h2>Free</h2>
+<div class="price" id="freePrice">0 VIL / 0 €</div>
+
+<div class="features">
+<div>✅ .url08-Links erstellen & herunterladen</div>
+<div>✅ .url08 bearbeiten</div>
+<div>✅ QR-Codes & PIN-Secure</div>
+<div>✅ .url/.url08 öffnen & QR erstellen</div>
+<div>✅ Unbegrenzt erstellen & bearbeiten</div>
+<div>❌ Cloudfunktionen</div>
+<div>❌ Web-Save</div>
+
+<div class="small">
+➡️ Kein Konto/Kreditkarte nötig<br>
+➡️ Direkt starten
+</div>
+</div>
+
+<button class="start">Starten</button>
+</div>
+
+<!-- PRO -->
+<div class="card">
+<h2>Pro</h2>
+<div class="price" id="proPrice">1 VIL / 0,75 €</div>
+
+<div class="features">
+<div>⚠️ Keine echten Zahlungen – jeder kann kostenlos Mitglied werden</div>
+<div>✅ Alle Free-Funktionen</div>
+<div>✅ Web-Save & Cloud-Linkshortener</div>
+<div>❌ Personalisierte Links</div>
+</div>
+
+<button class="start" href="auth.html?plan=pro">Mitglied werden</button>
+</div>
+
+<!-- TEAM -->
+<div class="card">
+<h2>Team / Educational</h2>
+<div class="price" id="teamPrice">0,12 VIL / 0,09 € p.p.</div>
+
+<div class="features">
+<div><b>Team (3–20 Personen)</b></div>
+<div>⚠️ Anmeldung nur nach Anfrage</div>
+<div>⚠️ Keine echten Zahlungen</div>
+<div>✅ Alle Funktionen von Pro</div>
+
+<br>
+
+<div><b>Educational:</b> kostenlos</div>
+</div>
+
+<button class="start">Anfrage senden</button>
+</div>
+
+</div>
+</div>
+
+<script>
+const rate = 0.75;
+
+const prices = {
+monthly: {
+free: 0,
+pro: 1,
+team: 0.12
+},
+yearly: {
+free: 0,
+pro: 10,
+team: 1.2
+},
+once: {
+free: 0,
+pro: 30,
+team: 45
+}
+};
+
+const buttons = document.querySelectorAll(".toggle button");
+
+function euro(v) {
+return (v * rate).toFixed(2).replace(".", ",");
+}
+
+function update(mode){
+document.getElementById("freePrice").textContent =
+`0 VIL / 0 €`;
+
+document.getElementById("proPrice").textContent =
+`${prices[mode].pro} VIL / ${euro(prices[mode].pro)} €`;
+
+if(mode==="once"){
+document.getElementById("teamPrice").textContent =
+`${prices[mode].team} VIL / ${euro(prices[mode].team)} € insgesamt`;
+} else {
+document.getElementById("teamPrice").textContent =
+`${prices[mode].team} VIL / ${euro(prices[mode].team)} € p.p.`;
+}
+}
+
+buttons.forEach(btn=>{
+btn.onclick=()=>{
+buttons.forEach(b=>b.classList.remove("active"));
+btn.classList.add("active");
+update(btn.dataset.mode);
+};
+});
+</script>
+
+</body>
+</html>
