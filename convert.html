@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>URL → URL08 Converter</title>
+<style>
+body { font-family: 'Aeropus UI II', sans-serif; background:#f7f8fa; margin:0; padding:32px; }
+h1 { color:#4c7cff; }
+input, button { padding:10px; font-size:1rem; margin-bottom:16px; }
+textarea { width:100%; height:150px; padding:10px; font-size:1rem; margin-bottom:16px; }
+label { display:block; margin-top:12px; }
+</style>
+</head>
+<body>
+
+<h1>URL → URL08 Converter</h1>
+
+<label>Datei auswählen (.url):</label>
+<input type="file" id="urlFile" accept=".url">
+
+<label>Name für Link:</label>
+<input type="text" id="linkName" placeholder="Name eingeben">
+
+<label><input type="checkbox" id="qrOption" checked> QR-Code aktivieren</label>
+
+<label>Passwort aktivieren:</label>
+<input type="checkbox" id="pwEnable">
+<div id="pwContainer" style="display:none;">
+    <label>6-stellige PIN:</label>
+    <input type="text" id="pwInput" maxlength="6" pattern="\d{6}">
+</div>
+
+<button id="convertBtn">Konvertieren → URL08</button>
+
+<h2>Vorschau / Ausgabe:</h2>
+<textarea id="output" readonly></textarea>
+
+<script>
+const urlFile = document.getElementById("urlFile");
+const convertBtn = document.getElementById("convertBtn");
+const output = document.getElementById("output");
+const pwEnable = document.getElementById("pwEnable");
+const pwContainer = document.getElementById("pwContainer");
+
+pwEnable.addEventListener("change", () => {
+    pwContainer.style.display = pwEnable.checked ? "block" : "none";
+});
+
+convertBtn.addEventListener("click", () => {
+    const file = urlFile.files[0];
+    const name = document.getElementById("linkName").value.trim();
+    const qr = document.getElementById("qrOption").checked;
+    const pw = pwEnable.checked ? document.getElementById("pwInput").value.trim() : "";
+
+    if(!file) return alert("Bitte eine .url Datei auswählen!");
+    if(!name) return alert("Bitte einen Namen eingeben!");
+    if(pwEnable.checked && !/^\d{6}$/.test(pw)) return alert("PIN muss 6-stellig sein!");
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const text = e.target.result;
+        // Einfache URL auslesen (Windows .url Format)
+        const urlMatch = text.match(/URL=(.+)/i);
+        const url = urlMatch ? urlMatch[1].trim() : "";
+        if(!url) return alert("Keine URL gefunden in der .url Datei!");
+
+        // URL08 Struktur erzeugen
+        const url08 = [[
+            {
+                name: name,
+                url: url,
+                qr: qr ? "yes" : "no",
+                password: pwEnable.checked ? "yes" : "no",
+                "pw-grid": pwEnable.checked ? pw.split("").map((d,i)=>`${i+1}-${d}`).join(" ") : "",
+                "create-time": new Date().toISOString().replace("T"," ").split(".")[0]
+            }
+        ]];
+
+        output.value = JSON.stringify(url08, null, 2);
+
+        // Optional: automatisch als Datei herunterladen
+        const blob = new Blob([JSON.stringify(url08, null, 2)], { type: "application/json" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = name + ".url08";
+        a.click();
+    }
+    reader.readAsText(file);
+});
+</script>
+
+</body>
+</html>
