@@ -270,10 +270,10 @@ function parseFile(text, filename){
     } else {
         const urlMatch = text.match(/URL=(.+)/);
         if(!urlMatch){ alert("Ungültige .url Datei!"); return; }
+
         document.getElementById("nameInput").value = filename.replace(/\.url$/,"");
         document.getElementById("urlInput").value = urlMatch[1];
         generateQRCode(urlMatch[1]);
-        checkOS("url");
         showGoBtn(urlMatch[1]);
     }
 }
@@ -313,14 +313,45 @@ document.getElementById("pwSubmit").addEventListener("click", ()=>{
     }
 });
 
-document.getElementById("pwClose").addEventListener("click", ()=>{
-    document.getElementById("pwOverlay").style.display = "none";
-});
-// Schließen Overlay OS
+// -----------------------------
+// WARNUNG NUR NOCH PER PARAMETER
+// -----------------------------
+
+function showOSWarning(type){
+    const overlay = document.getElementById("osWarning");
+    const text = document.getElementById("osWarningText");
+
+    if(type==="applemobile"){
+        text.innerHTML = `<b>URL-Internetkürzel</b><br>
+Ein URL-Internetkürzel ist nicht mit iOS oder iPadOS und dieser Seite kompatibel.<br>
+Bitte den Ersteller, eine .url08 zu erstellen oder nimm eine andere Datei.<br>
+Bist du auf URLs angewiesen, öffne den Link mit einem Android-Gerät, einem Windows-PC (Windows 10 oder neuer), über macOS (ab Big Sur) oder Linux.`;
+    } else if(type==="windowsvista78"){
+        text.innerHTML = `<b>URL-Datei erkannt</b><br>
+Es wurde eine URL-Datei mit einem alten Betriebssystem geöffnet.<br>
+Öffne deine URL über deine Dateien oder teste eine .url08.`;
+    }
+
+    overlay.style.display = "flex";
+}
+
+// Nur URL-Parameter prüfen (kein OS-Check mehr)
+(function checkForcedWarning(){
+    const params = new URLSearchParams(window.location.search);
+    const warning = params.get("warning");
+    if(!warning) return;
+
+    if(warning.toLowerCase()==="applemobile"){
+        showOSWarning("applemobile");
+    } else if(warning.toLowerCase()==="windowsvista78"){
+        showOSWarning("windowsvista78");
+    }
+})();
+
+// Overlay schließen
 document.getElementById("closeWarningBtn").addEventListener("click",()=>{
     document.getElementById("osWarning").style.display="none";
 });
 </script>
-
 </body>
 </html>
