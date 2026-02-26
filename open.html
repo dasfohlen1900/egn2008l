@@ -316,42 +316,6 @@ document.getElementById("pwSubmit").addEventListener("click", ()=>{
 document.getElementById("pwClose").addEventListener("click", ()=>{
     document.getElementById("pwOverlay").style.display = "none";
 });
-
-
-
-function showOSWarning(type){
-    const overlay = document.getElementById("osWarning");
-    const text = document.getElementById("osWarningText");
-    if(type==="applemobile"){
-        text.innerHTML = `<b>URL-Internetkürzel</b><br>
-Ein URL-Internetkürzel ist nicht mit iOS oder iPadOS und dieser Seite kompatibel.<br>
-Bitte den Ersteller, eine .url08 zu erstellen oder nimm eine andere Datei.<br>
-Bist du auf URLs angewiesen, öffne den Link mit einem Android-Gerät, einem Windows-PC (Windows 10 oder neuer), über macOS (ab Big Sur) oder Linux.`;
-    } else if(type==="windowsvista78"){
-        text.innerHTML = `<b>URL-Datei erkannt</b><br>
-Es wurde eine URL-Datei mit einem alten Betriebssystem geöffnet.<br>
-Öffne deine URL über deine Dateien oder teste eine .url08.`;
-    }
-    overlay.style.display = "flex";
-}
-
-function checkForcedWarning(){
-    const params = new URLSearchParams(window.location.search);
-    const warning = params.get("warning");
-    if(!warning) return false;
-    if(warning.toLowerCase()==="applemobile"){ showOSWarning("applemobile"); return true; }
-    if(warning.toLowerCase()==="windowsvista78"){ showOSWarning("windowsvista78"); return true; }
-    return false;
-}
-
-function checkOS(fileType){
-    if(checkForcedWarning()) return;
-    const os = detectOS();
-    if(fileType==="url" && os==="iOS") showOSWarning("applemobile");
-    else if(fileType==="url" && os==="Windows_old") showOSWarning("windowsvista78");
-    else if(fileType==="url" && os==="macOS_old") showOSWarning("windowsvista78");
-}
-
 // Schließen Overlay OS
 document.getElementById("closeWarningBtn").addEventListener("click",()=>{
     document.getElementById("osWarning").style.display="none";
