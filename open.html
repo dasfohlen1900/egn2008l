@@ -317,24 +317,7 @@ document.getElementById("pwClose").addEventListener("click", ()=>{
     document.getElementById("pwOverlay").style.display = "none";
 });
 
-// OS Detection
-function detectOS(){
-    const ua = navigator.userAgent;
-    if(/iPhone|iPad|iPod/i.test(ua)) return "iOS";
-    if(/Macintosh|MacIntel/i.test(ua)){
-        const m = ua.match(/Mac OS X (\d+)_(\d+)_?(\d+)?/);
-        if(m && parseInt(m[1])<11) return "macOS_old";
-        return "macOS";
-    }
-    if(/Windows NT/i.test(ua)){
-        const w = ua.match(/Windows NT (\d+)\.(\d+)/);
-        if(w && parseInt(w[1])<10) return "Windows_old";
-        return "Windows";
-    }
-    if(/Android/i.test(ua)) return "Android";
-    if(/Linux/i.test(ua)) return "Linux";
-    return "Unknown";
-}
+
 
 function showOSWarning(type){
     const overlay = document.getElementById("osWarning");
